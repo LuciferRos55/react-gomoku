@@ -8,7 +8,9 @@ function MoveList(props) {
       desc = 'Game start';
     } else if (move === props.history.length - 1 && props.winner) {
       desc = 'Winner ' + props.winner + ': ' + step.position.toString();
-    } else if (move === props.stepNumber) {
+    }  else if (move === props.history.length - 1 && props.draw) {
+      desc = 'Draw: '+ step.position.toString();
+    }  else if (move === props.stepNumber) {
       desc = <b>Move {step.player}: {step.position.toString()} </b>;
     } else {
       desc = 'Move ' + step.player + ': ' + step.position.toString();
@@ -21,6 +23,9 @@ function MoveList(props) {
     );
   });
 
+  if (props.movead === 'D'){
+    moves.reverse();
+  }
   return (
     <ol>{moves}</ol>
   );

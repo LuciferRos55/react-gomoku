@@ -6,6 +6,7 @@ import Status from './components/status';
 import ResetButton from './components/reset-button';
 import Navigation from './components/navigation';
 import './style.css';
+import MoveAD from './components/moveAD';
 
 
 class Position {
@@ -19,8 +20,8 @@ class Position {
   }
 }
 
-function checkRow(squares, x) {
-    return (squares[x] && squares[x] === squares[x+1] && squares[x] === squares[x+2] && squares[x] === squares[x+3] && squares[x] === squares[x+4]);
+function checkRow(squares, x, step) {
+    return (squares[x] && squares[x] === squares[x+step] && squares[x] === squares[x+step*2] && squares[x] === squares[x+step*3] && squares[x] === squares[x+step*4]);
 
 }
 class Game extends React.Component {
@@ -32,11 +33,13 @@ class Game extends React.Component {
       }],
       nextPlayer: 'X',
       stepNumber: 0,
+      moveAD: 'A',
     };
 
     this.handleClick = this.handleClick.bind(this);
     this.resetGame = this.resetGame.bind(this);
     this.jumpTo = this.jumpTo.bind(this);
+    this.asdes = this.asdes.bind(this);
   }
 
   currentSquares() {
@@ -62,24 +65,48 @@ class Game extends React.Component {
   }
 
   calculateWinner(squares) {
-    let a,b,c,d,e = null;
-    const lines = [a,b,c,d,e];
+    let lines = [];
+    let step = 0;
     //horizontal
+    step = 1;
     for (let x = 0; x < BOARD_SIZE; x++) { 
       for (let y = x*BOARD_SIZE; y < (x*BOARD_SIZE+BOARD_SIZE)-4; y++){
-        if (checkRow(squares,y)) {
-          return {player: squares[y], line: lines[y,y+1,y+2,y+3,y+4]};
+        if (checkRow(squares,y,step)) {
+          lines[0]=[y,y+step,y+step*2,y+step*3,y+step*4]
+          return {player: squares[y], line: lines[0]};
         }
       }
     }  
-
-
-    // for (let i = 0; i < lines.length; i++) {
-    //   const [a, b, c] = lines[i];
-    //   if (checkRow(squares,a)) {
-    //     return {player: squares[a], line: lines[i]};
-    //   }
-    // }
+    //vertical
+    step = BOARD_SIZE;
+    for (let x = 0; x < BOARD_SIZE-4; x++) { 
+      for (let y = x*BOARD_SIZE; y < (x*BOARD_SIZE+BOARD_SIZE); y++){
+        if (checkRow(squares,y,step)) {
+          lines[0]=[y,y+step,y+step*2,y+step*3,y+step*4]
+          return {player: squares[y], line: lines[0]};
+        }
+      }
+    }  
+    //major diag
+    step = BOARD_SIZE+1;
+    for (let x = 0; x < BOARD_SIZE-4; x++) { 
+      for (let y = x*BOARD_SIZE; y < (x*BOARD_SIZE+BOARD_SIZE)-4; y++){
+        if (checkRow(squares,y,step)) {
+          lines[0]=[y,y+step,y+step*2,y+step*3,y+step*4]
+          return {player: squares[y], line: lines[0]};
+        }
+      }
+    }  
+    //minor diag
+    step = BOARD_SIZE-1;
+    for (let x = 0; x < BOARD_SIZE; x++) { 
+      for (let y = x*BOARD_SIZE+4; y < (x*BOARD_SIZE+BOARD_SIZE); y++){
+        if (checkRow(squares,y,step)) {
+          lines[0]=[y,y+step,y+step*2,y+step*3,y+step*4]
+          return {player: squares[y], line: lines[0]};
+        }
+      }
+    } 
     return null;
   }
 
@@ -100,11 +127,25 @@ class Game extends React.Component {
     });
   }
 
+  asdes(){
+    if (this.state.moveAD === 'A'){
+      this.setState({
+        moveAD: 'D',
+      })
+    } else {
+      this.setState({
+        moveAD: 'A',
+      })
+    }
+  }
+
   render() {
     const history = this.state.history;
     const lastSquares = history[history.length - 1].squares;
     const winner = this.calculateWinner(lastSquares);
+    const draw = lastSquares.every(element => element !== null) ? 'D' : null;
     const winnerPlayer = winner ? winner.player : null;
+    let movead = this.state.moveAD;
     let winnerLine = null;
     // only show winner line when last move is selected in history
     if (winner && this.state.stepNumber === history.length - 1 ) {
@@ -114,7 +155,7 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Status winner={winnerPlayer} nextPlayer={this.state.nextPlayer} />
+          <Status winner={winnerPlayer} nextPlayer={this.state.nextPlayer} draw={draw}/>
           <Board winnerLine={winnerLine} squares={this.currentSquares()}
                  onClick={this.handleClick} />
           <ResetButton onReset={this.resetGame} />
@@ -123,7 +164,9 @@ class Game extends React.Component {
                       onClick={this.jumpTo} />
         </div>
         <div className="game-info">
-          <MoveList history={this.state.history} winner={winnerPlayer}
+          <MoveAD movead={movead} 
+                  onClick={this.asdes}/>
+          <MoveList history={this.state.history} winner={winnerPlayer} draw={draw} movead={movead}
                     onClick={this.jumpTo} stepNumber={this.state.stepNumber} />
         </div>
       </div>
