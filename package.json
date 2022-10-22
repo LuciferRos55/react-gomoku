@@ -1,7 +1,7 @@
 {
   "name": "tutorial",
   "version": "0.1.0",
-  "homepage": "https://kissgyorgy.me/react-gomoku/",
+  "homepage": "https://luciferros-gomoku.netlify.app",
   "private": true,
   "devDependencies": {
     "react-scripts": "0.7.0"
