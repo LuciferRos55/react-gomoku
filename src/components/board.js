@@ -1,8 +1,8 @@
 import React from 'react';
 import Sign from './sign';
 
-//export const SIZE = 20;
-export const SIZE = 5;
+export const SIZE = 20;
+//export const SIZE = 5;
 
 
 function Square(props) {

@@ -1,6 +1,7 @@
 # React Gomoku
 
 Enchanced version of the [official React tutorial](https://facebook.github.io/react/tutorial/tutorial.html).
+Hosted on: https://luciferros-gomoku.netlify.app/#
 
 Enhancements:
 - Display the location for each move in the format (col, row) in the move history list.
